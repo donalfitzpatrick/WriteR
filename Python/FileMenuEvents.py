@@ -38,15 +38,20 @@ def fatalError(self, message):
     self.OnExit()
 
 
+
 def fileOpen(self, dirname, filename):
     path = join(dirname.strip(), filename)
     try:
-        with open(path, "r") as textfile:
-            self.editor.SetValue(textfile.read())
+        with open(path, "r", encoding="utf-8") as textfile:
+            content = textfile.read()
+    except UnicodeDecodeError:
+        with open(path, "r", encoding="latin-1") as textfile:
+            content = textfile.read()
     except Exception as error:
         self.fatalError(f"An error occurred with file '{path}': {error}")
         self.OnExit()
-
+        return
+    self.editor.SetValue(content)
 
 def OnNewFile(self, event):
     self.olddirname = self.dirname
