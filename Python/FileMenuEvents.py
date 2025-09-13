@@ -38,7 +38,6 @@ def fatalError(self, message):
     self.OnExit()
 
 
-
 def fileOpen(self, dirname, filename):
     path = join(dirname.strip(), filename)
     try:
@@ -52,6 +51,7 @@ def fileOpen(self, dirname, filename):
         self.OnExit()
         return
     self.editor.SetValue(content)
+
 
 def OnNewFile(self, event):
     self.olddirname = self.dirname

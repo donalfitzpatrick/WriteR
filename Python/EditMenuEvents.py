@@ -91,34 +91,37 @@ def OnSetMark(self, event):
 
 
 def F3Next(self, event):
-    self.FindFrom(self.priorMatchCol, self.priorMatchRow, False)
+    FindFrom(self, self.priorMatchCol, self.priorMatchRow, False)
 
 
 def ShiftF3Previous(self, event):
-    self.FindFrom(self.priorMatchCol, self.priorMatchRow, True)
+    FindFrom(self, self.priorMatchCol, self.priorMatchRow, True)
 
 
 def OnFind(self, event):
     et = event.GetEventType()
-    self.regex = re.compile(self.ComputeFindString(event), self.ComputeReFlags(event))
+    self.regex = re.compile(ComputeFindString(self, event), ComputeReFlags(self, event))
     self.forward = event.GetFlags() & wx.FR_DOWN
     if et == wx.wxEVT_COMMAND_FIND:
         _, col, row = self.editor.PositionToXY(self.editor.GetInsertionPoint())
-        self.FindFrom(col, row, False)
+        FindFrom(self, col, row, False)
     elif et == wx.wxEVT_COMMAND_FIND_NEXT:
-        self.FindFrom(self.priorMatchCol, self.priorMatchRow, False)
+        FindFrom(self, self.priorMatchCol, self.priorMatchRow, False)
     elif et == wx.wxEVT_COMMAND_FIND_REPLACE:
-        self.ReplaceNext(event)
+        ReplaceNext(self, event)
     elif et == wx.wxEVT_COMMAND_FIND_REPLACE_ALL:
-        self.ReplaceAll(event)
+        ReplaceAll(self, event)
     else:
         self.console.write(f"unexpected eventType {et} -- {event}\n")
 
 
 def ComputeFindString(self, event):
+    s = event.GetFindString()
+    if not s:
+        return ""  # avoid None
     if event.GetFlags() & wx.FR_WHOLEWORD:
-        return "".join([r"\b", re.escape(event.GetFindString()), r"\b"])
-    return "".join([re.escape(event.GetFindString())])
+        return r"\b" + re.escape(s) + r"\b"
+    return re.escape(s)
 
 
 def OnFindClose(self, event):
@@ -159,7 +162,7 @@ def MoveTo(self, row, col):
     self.priorMatchRow = row
     self.priorMatchCol = col
     message = f"Line {row} Col {col}"
-    self.TellUser(message)
+    TellUser(self, message)
     position = self.editor.XYToPosition(col, row)
     self.editor.SetInsertionPoint(position)
     self.editor.ShowPosition(position)
@@ -174,14 +177,14 @@ def FindFrom(self, currentColumn, currentRow, reverseDirection):
     if searchForward:
         matchObject = self.regex.search(currentLine[currentColumn + 1 :])
         if matchObject:
-            self.MoveTo(currentRow, currentColumn + 1 + matchObject.start())
+            MoveTo(self, currentRow, currentColumn + 1 + matchObject.start())
             return
     else:
         matchObject = self.regex.search(currentLine[:currentColumn])
         if matchObject:
             for matchObject in self.regex.finditer(currentLine[:currentColumn]):
                 pass
-            self.MoveTo(currentRow, matchObject.start())
+            MoveTo(self, currentRow, matchObject.start())
             return
     # General case for checking whole lines
     if searchForward:
@@ -195,7 +198,7 @@ def FindFrom(self, currentColumn, currentRow, reverseDirection):
             if not searchForward:
                 for matchObject in self.regex.finditer(line):
                     pass
-            self.MoveTo(i, matchObject.start())
+            MoveTo(self, i, matchObject.start())
             return
     if beep:
         winsound.Beep(500, 500)
@@ -206,9 +209,9 @@ def ReplaceNext(self, event):
 
 
 def ReplaceAll(self, event):
-    findString = self.ComputeFindString(event)
-    reFlags = self.ComputeReFlags(event)
-    replaceString = self.ComputeReplacementString(event)
+    findString = ComputeFindString(self, event)
+    reFlags = ComputeReFlags(self, event)
+    replaceString = ComputeReplacementString(self, event)
     oldText = self.editor.GetValue()
     newText = re.sub(findString, replaceString, oldText, flags=reFlags)
     insertionPoint = self.editor.GetInsertionPoint()
@@ -220,16 +223,16 @@ def ReplaceAll(self, event):
 
 
 def duplicateline(self, e):
-    self.control.SelectionDuplicate()
+    self.editor.SelectionDuplicate()
 
 
 def lineup(self, e):
-    self.control.MoveSelectedLinesUp()
+    self.editor.MoveSelectedLinesUp()
 
 
 def linedown(self, e):
-    self.control.MoveSelectedLinesDown()
+    self.editor.MoveSelectedLinesDown()
 
 
 def unindent(self, e):
-    self.control.BackTab()
+    self.editor.BackTab()
