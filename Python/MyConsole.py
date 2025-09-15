@@ -8,7 +8,7 @@ class MyConsole:
         self.console = parent.CreateTextCtrl("")
         self.console.SetEditable(True)
         self.parent = parent
-        parent._mgr.AddPane(
+        parent.mgr.AddPane(
             self.console,
             AuiPaneInfo()
             .Name("console")

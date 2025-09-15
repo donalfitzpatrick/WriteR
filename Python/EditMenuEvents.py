@@ -205,7 +205,38 @@ def FindFrom(self, currentColumn, currentRow, reverseDirection):
 
 
 def ReplaceNext(self, event):
-    return
+    findString = ComputeFindString(self, event)
+    reFlags = ComputeReFlags(self, event)
+    replaceString = ComputeReplacementString(self, event)
+
+    text = self.editor.GetValue()
+    cursorPos = self.editor.GetInsertionPoint()
+
+    # Search forward from the current cursor position
+    match = re.search(findString, text[cursorPos:], flags=reFlags)
+
+    if match:
+        start = cursorPos + match.start()
+        end = cursorPos + match.end()
+        # Replace the match
+        newText = text[:start] + replaceString + text[end:]
+        self.editor.SetValue(newText)
+        # Move cursor just after the replacement
+        self.editor.SetInsertionPoint(start + len(replaceString))
+        if beep:
+            winsound.Beep(1000, 250)
+    else:
+        # Optional: wrap-around search from the top
+        match = re.search(findString, text, flags=reFlags)
+        if match:
+            start, end = match.span()
+            newText = text[:start] + replaceString + text[end:]
+            self.editor.SetValue(newText)
+            self.editor.SetInsertionPoint(start + len(replaceString))
+            if beep:
+                winsound.Beep(1000, 250)
+        elif beep:
+            winsound.Beep(500, 500)
 
 
 def ReplaceAll(self, event):

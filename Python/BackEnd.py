@@ -47,7 +47,7 @@ class BashProcessThread(Thread):
             del busy
             doneFunc(f"\nCaught error {error} for {input_list}")
 
-        except Exception as error:
+        except Exception as error:  # pylint: disable=W0718
             del busy
             doneFunc(f"\nUnexpected error {error} for {input_list}")
 
@@ -77,5 +77,8 @@ def TellUser(self, text):
             nm.Show(timeout=1)
         except wx.PyNoAppError as error:
             print(f"wxPython app is not initialized properly: {error}")
-        except Exception as error:
+        except wx.wxAssertionError as error:
+            print(f"wxPython assertion failed: {error}")
+        except Exception as error:  # pylint: disable=W0718
+            # Broad catch is intentional: notifications should never crash the app
             print(f"Unexpected problem setting notification: {error}")

@@ -43,8 +43,8 @@ class MainWindow(wx.Frame):
     ):
         super(MainWindow, self).__init__(parent, id, title, pos, size, style)
         self.Bind(wx.EVT_CLOSE, self.OnClose)
-        self._mgr = AuiManager()
-        self._mgr.SetManagedWindow(self)
+        self.mgr = AuiManager()
+        self.mgr.SetManagedWindow(self)
         self.focusConsole = False
         self.ChosenFontSize = 14
         self.font = wx.Font(
@@ -91,13 +91,13 @@ class MainWindow(wx.Frame):
     def CreateInteriorWindowComponents(self):
         self.editor = self.CreateTextCtrl(self.settings["newText"])
         self.console = MyConsole.MyConsole(self)
-        self._mgr.AddPane(self.editor, AuiPaneInfo().Name("editor").CenterPane().Hide())
-        self._mgr.GetPane("editor").Show()
+        self.mgr.AddPane(self.editor, AuiPaneInfo().Name("editor").CenterPane().Hide())
+        self.mgr.GetPane("editor").Show()
         self.editor.SetFocus()
         self.editor.SelectAll()
         self.priorMatchCol = 0
         self.priorMatchRow = 0
-        self._mgr.Update()
+        self.mgr.Update()
 
     def CreateExteriorWindowComponents(self):
         self.CreateMenu()

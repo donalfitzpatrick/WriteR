@@ -55,8 +55,8 @@ def OnPProcess(self, event, whichcmd):
 
 
 def OnProcess(self, event, whichcmd):
-    self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
-    self._mgr.Update()
+    self.mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
+    self.mgr.Update()
     self.SetFocusConsole(False)
     self.OnSave(event)  # This ensures the file is up to date for the build
     if AppName == "QuartoWriter":
@@ -68,8 +68,8 @@ def OnProcess(self, event, whichcmd):
 
 
 def CheckSoftwareVersion(self, event, software):
-    self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
-    self._mgr.Update()
+    self.mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
+    self.mgr.Update()
     self.SetFocusConsole(False)
     StartThread(self, [software, "--version"])
 
@@ -90,8 +90,8 @@ def CheckPythonVersion(self, event):
 
 
 def CheckRVersion(self, event):
-    self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
-    self._mgr.Update()
+    self.mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
+    self.mgr.Update()
     self.SetFocusConsole(False)
     if AppName == "QuartoWriter":
         StartThread(self, ["quarto", "check", "knitr"])

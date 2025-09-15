@@ -44,12 +44,28 @@ def fileOpen(self, dirname, filename):
         with open(path, "r", encoding="utf-8") as textfile:
             content = textfile.read()
     except UnicodeDecodeError:
+        # Fallback if UTF-8 fails
         with open(path, "r", encoding="latin-1") as textfile:
             content = textfile.read()
-    except Exception as error:
-        self.fatalError(f"An error occurred with file '{path}': {error}")
+    except FileNotFoundError:
+        self.fatalError(f"File not found: '{path}'")
         self.OnExit()
         return
+    except PermissionError:
+        self.fatalError(f"Permission denied: '{path}'")
+        self.OnExit()
+        return
+    except OSError as error:
+        # Catches other OS-related errors (e.g. IsADirectoryError, I/O error)
+        self.fatalError(f"OS error with file '{path}': {error}")
+        self.OnExit()
+        return
+    except Exception as error:  # pylint: disable=W0718
+        # Last resort: shouldn't happen often, but prevents a crash
+        self.fatalError(f"Unexpected error with file '{path}': {error}")
+        self.OnExit()
+        return
+
     self.editor.SetValue(content)
 
 
@@ -79,8 +95,8 @@ def OnSave(self, event):
 
 
 def OnExit(self):
-    if self._mgr:
-        self._mgr.UnInit()
+    if self.mgr:
+        self.mgr.UnInit()
     self.Close()  # Close the main window.
 
 
