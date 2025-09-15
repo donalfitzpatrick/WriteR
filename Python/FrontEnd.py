@@ -6,7 +6,7 @@ import winsound
 
 import wx
 import wx.adv
-from wx.aui import AuiManager, AuiPaneInfo
+import wx.aui
 
 # import our modules
 from Settings import (
@@ -43,7 +43,7 @@ class MainWindow(wx.Frame):
     ):
         super(MainWindow, self).__init__(parent, id, title, pos, size, style)
         self.Bind(wx.EVT_CLOSE, self.OnClose)
-        self.mgr = AuiManager()
+        self.mgr = wx.aui.AuiManager()
         self.mgr.SetManagedWindow(self)
         self.focusConsole = False
         self.ChosenFontSize = 14
@@ -91,7 +91,9 @@ class MainWindow(wx.Frame):
     def CreateInteriorWindowComponents(self):
         self.editor = self.CreateTextCtrl(self.settings["newText"])
         self.console = MyConsole.MyConsole(self)
-        self.mgr.AddPane(self.editor, AuiPaneInfo().Name("editor").CenterPane().Hide())
+        self.mgr.AddPane(
+            self.editor, wx.aui.AuiPaneInfo().Name("editor").CenterPane().Hide()
+        )
         self.mgr.GetPane("editor").Show()
         self.editor.SetFocus()
         self.editor.SelectAll()
@@ -723,7 +725,7 @@ class MainWindow(wx.Frame):
             menuBar.Append(mathsMenu, "Maths")  # Add the maths Menu to the MenuBar
 
         helpMenu = wx.Menu()
-        for id, label, helpText, handler, whichApp in [
+        for menu_id, label, helpText, handler, whichApp in [
             (
                 wx.ID_ANY,
                 "Basic help",
@@ -742,7 +744,7 @@ class MainWindow(wx.Frame):
             if label is None:
                 helpMenu.AppendSeparator()
             else:
-                item = helpMenu.Append(wx.ID_ANY, label, helpText)
+                item = helpMenu.Append(menu_id, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
         menuBar.Append(helpMenu, "&Help")  # Add the helpMenu to the MenuBar
         self.SetMenuBar(menuBar)  # Add the menuBar to the Frame
@@ -764,22 +766,6 @@ class MainWindow(wx.Frame):
         # MainWindow.SetTitle overrides wx.Frame.SetTitle, so we have to
         # call it using super:
         super(MainWindow, self).SetTitle(AppName + f" -  {self.filename}")
-
-    # Helper methods:
-    def defaultFileDialogOptions(self):
-        return dict(message="Choose a file", defaultDir=self.dirname, wildcard="*.*")
-
-    def askUserForFilename(self, **dialogOptions):
-        dialog = wx.FileDialog(self, **dialogOptions)
-        if dialog.ShowModal() == wx.ID_OK:
-            userProvidedFilename = True
-            self.filename = dialog.GetFilename()
-            self.dirname = dialog.GetDirectory()
-            self.SetTitle()  # Update the window title with the new filename
-        else:
-            userProvidedFilename = False
-        dialog.Destroy()
-        return userProvidedFilename
 
     # Event handlers:
     # general events

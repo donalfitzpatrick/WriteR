@@ -1,4 +1,4 @@
-from wx.aui import AuiPaneInfo
+import wx.aui
 
 
 class MyConsole:
@@ -8,9 +8,10 @@ class MyConsole:
         self.console = parent.CreateTextCtrl("")
         self.console.SetEditable(True)
         self.parent = parent
+
         parent.mgr.AddPane(
             self.console,
-            AuiPaneInfo()
+            wx.aui.AuiPaneInfo()
             .Name("console")
             .Caption("Console")
             .Bottom()
@@ -19,14 +20,12 @@ class MyConsole:
             .CloseButton(True)
             .MinimizeButton(True),
         )
+
         self.console.SetValue("")
         self.console.write("Render output goes here\n\n")
 
     def Reset(self):
         self.console.SetValue("")
-
-    #    def write(self, text):
-    #        self.console.write(text)
 
     def CreateWriteText(self, text):
         self.console.write(text)

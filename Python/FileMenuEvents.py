@@ -7,7 +7,7 @@ import wx
 
 
 def OnOpen(self, event):
-    if self.askUserForFilename(style=wx.FD_OPEN, **self.defaultFileDialogOptions()):
+    if askUserForFilename(self, style=wx.FD_OPEN, **defaultFileDialogOptions(self)):
         self.fileOpen(self.dirname, self.filename)
 
 
@@ -80,8 +80,11 @@ def OnNewFile(self, event):
 
 
 def OnSaveAs(self, event):
-    if self.askUserForFilename(
-        defaultFile=self.filename, style=wx.FD_SAVE, **self.defaultFileDialogOptions()
+    if askUserForFilename(
+        self,
+        defaultFile=self.filename,
+        style=wx.FD_SAVE,
+        **defaultFileDialogOptions(self),
     ):
         self.OnSave(event)
 
@@ -103,3 +106,24 @@ def OnExit(self):
 def OnSafeExit(self, event):
     self.OnSave(event)
     self.OnExit()
+
+
+def defaultFileDialogOptions(self):
+    return {
+        "message": "Choose a file",
+        "defaultDir": self.dirname,
+        "wildcard": "*.*",
+    }
+
+
+def askUserForFilename(self, **dialogOptions):
+    dialog = wx.FileDialog(self, **dialogOptions)
+    if dialog.ShowModal() == wx.ID_OK:
+        userProvidedFilename = True
+        self.filename = dialog.GetFilename()
+        self.dirname = dialog.GetDirectory()
+        self.SetTitle()  # Update the window title with the new filename
+    else:
+        userProvidedFilename = False
+    dialog.Destroy()
+    return userProvidedFilename
