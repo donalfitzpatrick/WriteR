@@ -107,7 +107,7 @@ class MainWindow(wx.Frame):
     def CreateMenu(self):
         menuBar = wx.MenuBar()  # create the menu bar object and add menus to it
         fileMenu = wx.Menu()
-        for id, label, helpText, handler in [
+        for menu_id, label, helpText, handler in [
             (wx.ID_NEW, "New file\tCtrl+N", "Start a new file", self.OnNewFile),
             (wx.ID_OPEN, "&Open\tCtrl+O", "Open an existing file", self.OnOpen),
             (wx.ID_SAVE, "&Save\tCtrl+S", "Save the current file", self.OnSave),
@@ -128,12 +128,12 @@ class MainWindow(wx.Frame):
             if label is None:
                 fileMenu.AppendSeparator()
             else:
-                item = fileMenu.Append(id, label, helpText)
+                item = fileMenu.Append(menu_id, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
         menuBar.Append(fileMenu, "&File")  # Add the fileMenu to the MenuBar
 
         editMenu = wx.Menu()
-        for id, label, helpText, handler in [
+        for menu_id, label, helpText, handler in [
             (
                 wx.ID_CUT,
                 "Cu&t\tCtrl+X",
@@ -205,7 +205,7 @@ class MainWindow(wx.Frame):
             if label is None:
                 editMenu.AppendSeparator()
             else:
-                item = editMenu.Append(wx.ID_ANY, label, helpText)
+                item = editMenu.Append(menu_id, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
         menuBar.Append(editMenu, "&Edit")  # Add the editMenu to the MenuBar
 
